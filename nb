@@ -3631,6 +3631,21 @@ $(_color_primary "Examples"):
 HEREDOC
 }
 _git() {
+
+  # Emily's hack for non-Cygwin git: Rewrite arguments containing $NB_DIR
+  git() {
+    if command git --version | grep -qi 'windows'; then
+      adjusted_args=()
+      for arg in "$@"; do
+        if [[ $arg == *"$NB_DIR"* ]]; then arg=$(cygpath -m "$arg"); fi
+        adjusted_args+=("$arg")
+      done
+      command git "${adjusted_args[@]}"
+    else
+      command git "$@"
+    fi
+  }
+
   # _git_autosyncable()
   #
   # Usage:
